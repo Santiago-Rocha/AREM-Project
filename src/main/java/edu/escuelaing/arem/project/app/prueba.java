@@ -4,7 +4,7 @@ import edu.escuelaing.arem.project.notation.Web;
 
 public class prueba {
 
-	@Web(url="prueba")
+	@Web("prueba")
 	public static String hola() {
 		return "Hola amigos";
 	}
