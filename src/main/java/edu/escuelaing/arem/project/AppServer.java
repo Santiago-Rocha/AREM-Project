@@ -70,42 +70,36 @@ public class AppServer {
                     out.println("Content-Type: text/html");
                     out.println();
                     out.println(sb.toString());
-                } 
-                else if (pet.matches(".*(.png)")) {
+                } else if (pet.matches(".*(.png)")) {
                     out.println("HTTP/1.1 200 OK");
                     out.println("Content-Type: image/png");
                     out.println();
                     BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + pet));
                     ImageIO.write(image, "PNG", clientSocket.getOutputStream());
                 }
-                /*else if(pet.matches(".*(favicon.ico)")){
+                /*
+                 * else if(pet.matches(".*(favicon.ico)")){ StringBuffer sb = new
+                 * StringBuffer(); System.out.println(pet); try (BufferedReader reader = new
+                 * BufferedReader( new FileReader(System.getProperty("user.dir") +
+                 * "/error.html"))) { String infile = null; while ((infile = reader.readLine())
+                 * != null) { sb.append(infile); } } out.println("HTTP/1.1 200 OK");
+                 * out.println("Content-Type: text/html"); out.println();
+                 * out.println(sb.toString()); }
+                 */
+                else {
                     StringBuffer sb = new StringBuffer();
                     System.out.println(pet);
                     try (BufferedReader reader = new BufferedReader(
                             new FileReader(System.getProperty("user.dir") + "/error.html"))) {
-                        String infile = null;
-                        while ((infile = reader.readLine()) != null) {
-                            sb.append(infile);
+                        while (reader.ready()) {
+                            sb.append(reader.readLine());
                         }
                     }
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
-                    out.println(sb.toString());
-                }*/
-                else{
-                    StringBuffer sb = new StringBuffer();
-                    System.out.println(pet);
-                    try (BufferedReader reader = new BufferedReader(
-                            new FileReader(System.getProperty("user.dir") + "/error.html"))) {
-                        String infile = null;
-                        while ((infile = reader.readLine()) != null) {
-                            sb.append(infile);
-                        }
-                    }
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: text/html\r");
-                    out.println("\r");
+                    String page = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n" + "\r\n";
+                    out.println(page);
+                    //ut.println("HTTP/1.1 200 OK\r");
+                    //out.println("Content-Type: text/html\r");
+                    //out.println("\r");
                     out.println(sb.toString());
                 }
             }
