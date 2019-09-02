@@ -78,13 +78,35 @@ public class AppServer {
                     BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + pet));
                     ImageIO.write(image, "PNG", clientSocket.getOutputStream());
                 }
-                else if(pet.matches(".*(favicon.ico)")){
+                /*else if(pet.matches(".*(favicon.ico)")){
+                    StringBuffer sb = new StringBuffer();
+                    System.out.println(pet);
+                    try (BufferedReader reader = new BufferedReader(
+                            new FileReader(System.getProperty("user.dir") + "/error.html"))) {
+                        String infile = null;
+                        while ((infile = reader.readLine()) != null) {
+                            sb.append(infile);
+                        }
+                    }
                     out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: image/vnd.microsoft.icon");
+                    out.println("Content-Type: text/html");
                     out.println();
-                    List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + pet));
-                    ICOEncoder.write(images.get(0), clientSocket.getOutputStream());
+                    out.println(sb.toString());
+                }*/
+                else{
+                    StringBuffer sb = new StringBuffer();
+                    System.out.println(pet);
+                    try (BufferedReader reader = new BufferedReader(
+                            new FileReader(System.getProperty("user.dir") + "/error.html"))) {
+                        String infile = null;
+                        while ((infile = reader.readLine()) != null) {
+                            sb.append(infile);
+                        }
+                    }
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: text/html");
                     out.println();
+                    out.println(sb.toString());
                 }
             }
 
