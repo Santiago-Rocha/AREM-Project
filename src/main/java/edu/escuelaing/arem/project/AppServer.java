@@ -84,9 +84,7 @@ public class AppServer {
                     out.println();
                     List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + pet));
                     ICOEncoder.write(images.get(0), clientSocket.getOutputStream());
-                    
-                
-                    
+                    out.println();
                 }
             }
 
