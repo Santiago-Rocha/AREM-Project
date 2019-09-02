@@ -1,0 +1,1 @@
+web: java -cp java -cp target/project-1.0-SNAPSHOT.jar edu.escuelaing.arem.project.Controller
