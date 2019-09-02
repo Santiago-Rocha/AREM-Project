@@ -5,10 +5,13 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import edu.escuelaing.arem.project.notation.Web;
+import net.sf.image4j.codec.ico.ICODecoder;
+import net.sf.image4j.codec.ico.ICOEncoder;
 
 public class AppServer {
     public static HashMap<String, Hanlder> ListURL = new HashMap<String, Hanlder>();
@@ -72,6 +75,15 @@ public class AppServer {
                     out.println();
                     BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + pet));
                     ImageIO.write(image, "PNG", clientSocket.getOutputStream());
+                }
+                else if(pet.matches(".*(favicon.ico)")){
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: image/vnd.microsoft.icon");
+                    out.println();
+                    List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + pet));
+                    //ImageIO.write(images.get(0), "ICO", );
+                    ICOEncoder.write(images.get(0), clientSocket.getOutputStream());
+                    
                 }
             }
 
