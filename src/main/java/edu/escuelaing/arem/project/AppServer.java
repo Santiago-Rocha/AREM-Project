@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,6 +84,8 @@ public class AppServer {
                     out.println();
                     List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + pet));
                     ICOEncoder.write(images.get(0), clientSocket.getOutputStream());
+                    
+                
                     
                 }
             }
