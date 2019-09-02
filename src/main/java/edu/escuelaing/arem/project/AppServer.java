@@ -66,9 +66,9 @@ public class AppServer {
                             sb.append(infile);
                         }
                     }
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
+                    out.println("HTTP/1.1 200 OK\r");
+                    out.println("Content-Type: text/html\r");
+                    out.println("\r");
                     out.println(sb.toString());
                 } else if (pet.matches(".*(.png)")) {
                     out.println("HTTP/1.1 200 OK");
@@ -97,7 +97,7 @@ public class AppServer {
                     }
                     String page = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n" + "\r\n";
                     out.println(page);
-                    //ut.println("HTTP/1.1 200 OK\r");
+                    //out.println("HTTP/1.1 200 OK\r");
                     //out.println("Content-Type: text/html\r");
                     //out.println("\r");
                     out.println(sb.toString());
