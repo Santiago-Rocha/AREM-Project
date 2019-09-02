@@ -1,1 +1,1 @@
-web: java -cp java -cp target/project-1.0-SNAPSHOT.jar edu.escuelaing.arem.project.Controller
+web: java -cp target/classes:target/dependency/* edu.escuelaing.arem.project.Controller

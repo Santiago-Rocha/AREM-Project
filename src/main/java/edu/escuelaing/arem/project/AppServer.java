@@ -81,7 +81,6 @@ public class AppServer {
                     out.println("Content-Type: image/vnd.microsoft.icon");
                     out.println();
                     List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + pet));
-                    //ImageIO.write(images.get(0), "ICO", );
                     ICOEncoder.write(images.get(0), clientSocket.getOutputStream());
                     
                 }
