@@ -41,6 +41,8 @@ public class AppServer {
                     break;
             }
             System.out.println(pet);
+            pet = pet == null ? "/error.html" : pet;
+            pet = pet.equals("/") ? "/index.html" : pet;
             if (pet.matches("(/app/).*")) {
                 if (ListURL.containsKey(pet)) {
                     out.println("HTTP/1.1 200 OK");
