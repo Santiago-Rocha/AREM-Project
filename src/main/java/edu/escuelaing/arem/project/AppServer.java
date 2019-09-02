@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,62 +48,24 @@ public class AppServer {
             pet = pet.equals("/") ? "/index.html" : pet;
             if (pet.matches("(/app/).*")) {
                 if (ListURL.containsKey(pet)) {
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
+                    out.println("HTTP/1.1 200 OK\r");
+                    out.println("Content-Type: text/html\r");
+                    out.println("\r");
                     out.println(ListURL.get(pet).process());
                 }
             } else {
-                if (pet.matches(".*(.html)")) {
-                    StringBuffer sb = new StringBuffer();
-                    System.out.println(pet);
-                    try (BufferedReader reader = new BufferedReader(
-                            new FileReader(System.getProperty("user.dir") + pet))) {
-                        String infile = null;
-                        while ((infile = reader.readLine()) != null) {
-                            sb.append(infile);
-                        }
-                    }
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: text/html\r");
-                    out.println("\r");
-                    out.println(sb.toString());
-                } else if (pet.matches(".*(.png)")) {
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: image/png\r");
-                    out.println("\r");
-                    BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + pet));
-                    ImageIO.write(image, "PNG", clientSocket.getOutputStream());
-                } else if (pet.matches(".*(favicon.ico)")) {
-                    StringBuffer sb = new StringBuffer();
-                    System.out.println(pet);
-                    try (BufferedReader reader = new BufferedReader(
-                            new FileReader(System.getProperty("user.dir") + "/error.html"))) {
-                        String infile = null;
-                        while ((infile = reader.readLine()) != null) {
-                            sb.append(infile);
-                        }
-                    }
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: text/html\r");
-                    out.println("\r");
-                    out.println(sb.toString());
-                }
-                else {
-                    StringBuffer sb = new StringBuffer();
-                    System.out.println(pet);
-                    try (BufferedReader reader = new BufferedReader(
-                            new FileReader(System.getProperty("user.dir") + "/error.html"))) {
-                        String infile = null;
-                        while ((infile = reader.readLine()) != null) {
-                            sb.append(infile);
-                        }
-                    }
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: text/html\r");
-                    out.println("\r");
-                    out.println(sb.toString());
-                }
+                if (pet.matches(".*(.html)")) 
+                    HtmlServer(out, pet);
+
+                else if (pet.matches(".*(.png)")) 
+                    ImagesServer(out, clientSocket.getOutputStream(), pet);
+
+                else if (pet.matches(".*(favicon.ico)")) 
+                    FaviconServer(out, clientSocket.getOutputStream(), pet);
+
+                else
+                    HtmlServer(out, "/error.html");
+
             }
 
             out.close();
@@ -130,10 +90,40 @@ public class AppServer {
         }
     }
 
-    static int getPort() {
+    private static int getPort() {
         if (System.getenv("PORT") != null) {
             return Integer.parseInt(System.getenv("PORT"));
         }
         return 4567; // returns default port if heroku-port isn't set (i.e. on localhost)
+    }
+
+    private static void ImagesServer(PrintWriter out, OutputStream outStream, String petition) throws IOException {
+        out.println("HTTP/1.1 200 OK\r");
+        out.println("Content-Type: image/png\r");
+        out.println("\r");
+        BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + petition));
+        ImageIO.write(image, "PNG", outStream);
+    }
+
+    private static void HtmlServer(PrintWriter out, String petition) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        try (BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + petition))) {
+            String infile = null;
+            while ((infile = reader.readLine()) != null) {
+                sb.append(infile);
+            }
+        }
+        out.println("HTTP/1.1 200 OK\r");
+        out.println("Content-Type: text/html\r");
+        out.println("\r");
+        out.println(sb.toString());
+    }
+
+    private static void FaviconServer(PrintWriter out, OutputStream outStream, String petition) throws IOException {
+        out.println("HTTP/1.1 200 OK\r");
+        out.println("Content-Type: image/vnd.microsoft.icon\r");
+        out.println("\r");
+        List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + petition));
+        ICOEncoder.write(images.get(0), outStream);
     }
 }
