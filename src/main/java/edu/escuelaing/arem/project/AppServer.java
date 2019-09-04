@@ -47,20 +47,22 @@ public class AppServer {
             pet = pet == null ? "/error.html" : pet;
             pet = pet.equals("/") ? "/index.html" : pet;
             if (pet.matches("(/app/).*")) {
+                Object[] params = extractParams(pet);
+                pet = pet.subSequence(0,pet.indexOf("?")).toString();
                 if (ListURL.containsKey(pet)) {
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
-                    out.println(ListURL.get(pet).process());
+                    out.println("HTTP/1.1 200 OK\r");
+                    out.println("Content-Type: text/html\r");
+                    out.println("\r");
+                    out.println(params == null ? ListURL.get(pet).process() : ListURL.get(pet).process(params));
                 }
             } else {
-                if (pet.matches(".*(.html)")) 
+                if (pet.matches(".*(.html)"))
                     HtmlServer(out, pet);
 
-                else if (pet.matches(".*(.png)")) 
+                else if (pet.matches(".*(.png)"))
                     ImagesServer(out, clientSocket.getOutputStream(), pet);
 
-                else if (pet.matches(".*(favicon.ico)")) 
+                else if (pet.matches(".*(favicon.ico)"))
                     FaviconServer(out, clientSocket.getOutputStream(), pet);
 
                 else
@@ -83,7 +85,7 @@ public class AppServer {
                 }
             }
             Method m = cls.getDeclaredMethod("hola", null);
-            System.out.println(m.invoke(null, null));
+            System.out.println(m.invoke(null, new Object[]{}));
             System.out.println(ListURL);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +117,7 @@ public class AppServer {
         }
         out.println("HTTP/1.1 200 OK\r");
         out.println("Content-Type: text/html\r");
-        out.println();
+        out.println("\r");
         out.println(sb.toString());
     }
 
@@ -125,5 +127,17 @@ public class AppServer {
         out.println("\r");
         List<BufferedImage> images = ICODecoder.read(new File(System.getProperty("user.dir") + petition));
         ICOEncoder.write(images.get(0), outStream);
+    }
+
+    private static Object[] extractParams(String pet) {
+        Object[] params = null;
+        if (pet.matches("[/app/]+[a-z]+[?]+[a-z,=,&,0-9]*")) {
+            String[] preParams = pet.split("\\?")[1].split("&");
+            params = new Object[preParams.length];
+            for (int i = 0; i < preParams.length; i++) {
+                params[i] = preParams[i].split("=")[1];
+            }
+        }
+        return params;
     }
 }

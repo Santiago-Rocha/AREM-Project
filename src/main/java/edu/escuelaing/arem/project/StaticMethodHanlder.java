@@ -12,7 +12,16 @@ public class StaticMethodHanlder implements Hanlder {
 
     public String process() {
         try {
-            return method.invoke(null, null).toString();
+            return method.invoke(null, new Object[]{}).toString();
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String process(Object[] params) {
+        try {
+            return method.invoke(null, params).toString();
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
             return null;
