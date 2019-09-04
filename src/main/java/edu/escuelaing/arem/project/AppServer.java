@@ -48,9 +48,9 @@ public class AppServer {
             pet = pet.equals("/") ? "/index.html" : pet;
             if (pet.matches("(/app/).*")) {
                 if (ListURL.containsKey(pet)) {
-                    out.println("HTTP/1.1 200 OK\r");
-                    out.println("Content-Type: text/html\r");
-                    out.println("\r");
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println();
                     out.println(ListURL.get(pet).process());
                 }
             } else {
@@ -115,7 +115,7 @@ public class AppServer {
         }
         out.println("HTTP/1.1 200 OK\r");
         out.println("Content-Type: text/html\r");
-        out.println("\r");
+        out.println();
         out.println(sb.toString());
     }
 
