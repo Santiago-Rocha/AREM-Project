@@ -14,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -24,6 +25,9 @@ import edu.escuelaing.arem.project.Sockets.AppSocket;
 import edu.escuelaing.arem.project.notation.Web;
 import net.sf.image4j.codec.ico.ICODecoder;
 import net.sf.image4j.codec.ico.ICOEncoder;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 /**
  * @author Santiago Rocha
@@ -84,16 +88,17 @@ public class AppServer {
      */
     public static void initialize() throws FileNotFoundException {
         try {
-            Class cls = Class.forName("edu.escuelaing.arem.project.app.prueba");
-            for (Method m : cls.getMethods()) {
-                if (m.isAnnotationPresent(Web.class)) {
-                    Hanlder handler = new StaticMethodHanlder(m);
-                    ListURL.put("/app/" + m.getAnnotation(Web.class).value(), handler);
+            Reflections reflections = new Reflections("edu.escuelaing.arem.project.app", new SubTypesScanner(false));
+            Set<Class<? extends Object>> allClasses = reflections.getSubTypesOf(Object.class);
+
+            for (Class cls : allClasses) {
+                for (Method m : cls.getMethods()) {
+                    if (m.isAnnotationPresent(Web.class)) {
+                        Hanlder handler = new StaticMethodHanlder(m);
+                        ListURL.put("/app/" + m.getAnnotation(Web.class).value(), handler);
+                    }
                 }
             }
-            Method m = cls.getDeclaredMethod("hola", null);
-            System.out.println(m.invoke(null, new Object[] {}));
-            System.out.println(ListURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
