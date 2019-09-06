@@ -1,15 +1,26 @@
 package edu.escuelaing.arem.project;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 
+import edu.escuelaing.arem.project.Handlers.Hanlder;
+import edu.escuelaing.arem.project.Handlers.StaticMethodHanlder;
+import edu.escuelaing.arem.project.Sockets.AppSocket;
 import edu.escuelaing.arem.project.notation.Web;
 import net.sf.image4j.codec.ico.ICODecoder;
 import net.sf.image4j.codec.ico.ICOEncoder;
@@ -17,24 +28,17 @@ import net.sf.image4j.codec.ico.ICOEncoder;
 public class AppServer {
     public static HashMap<String, Hanlder> ListURL = new HashMap<String, Hanlder>();
 
+    /**
+     * Esc
+     * @throws IOException
+     */
     public static void listen() throws IOException {
-        ServerSocket serverSocket = null;
-        try {
-            serverSocket = new ServerSocket(getPort());
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: 35000.");
-            System.exit(1);
-        }
+        ServerSocket serverSocket = AppSocket.StartServerSocket();
+
 
         while (true) {
-            Socket clientSocket = null;
-            try {
-                System.out.println("Listo para recibir ...");
-                clientSocket = serverSocket.accept();
-            } catch (IOException e) {
-                System.err.println("Accept failed.");
-                System.exit(1);
-            }
+            Socket clientSocket = AppSocket.StartClientSocket(serverSocket);
+            
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine = null, pet = null;
@@ -86,13 +90,6 @@ public class AppServer {
         }
     }
 
-    private static int getPort() {
-        if (System.getenv("PORT") != null) {
-            return Integer.parseInt(System.getenv("PORT"));
-        }
-        return 4567; // returns default port if heroku-port isn't set (i.e. on localhost)
-    }
-
     private static void ImagesServer(PrintWriter out, OutputStream outStream, String petition) throws IOException {
         try {
             BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + "/resources" + petition));
@@ -116,7 +113,7 @@ public class AppServer {
             }
             out.println("HTTP/1.1 200 OK\r");
             out.println("Content-Type: text/html\r");
-            out.println("");
+            out.println("\r");
             out.println(sb.toString());
         } catch (FileNotFoundException ex) {
             HtmlServer(out, "/error.html");
