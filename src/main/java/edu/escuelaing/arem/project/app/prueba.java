@@ -11,6 +11,6 @@ public class prueba {
 
 	@Web("suma")
 	public static String suma(String num1, String num2) {
-		return Integer.toString(Integer.parseInt(num1)+Integer.parseInt(num2));
+		return "La suma es "+Integer.toString(Integer.parseInt(num1)+Integer.parseInt(num2));
 	}
 }
