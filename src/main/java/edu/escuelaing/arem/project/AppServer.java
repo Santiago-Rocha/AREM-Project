@@ -25,20 +25,24 @@ import edu.escuelaing.arem.project.notation.Web;
 import net.sf.image4j.codec.ico.ICODecoder;
 import net.sf.image4j.codec.ico.ICOEncoder;
 
+/**
+ * @author Santiago Rocha
+ */
+
 public class AppServer {
     public static HashMap<String, Hanlder> ListURL = new HashMap<String, Hanlder>();
 
     /**
-     * Esc
+     * Este metodo escucha y maneja las peticiones que le llegan al servidor web
+     * 
      * @throws IOException
      */
     public static void listen() throws IOException {
         ServerSocket serverSocket = AppSocket.StartServerSocket();
 
-
         while (true) {
             Socket clientSocket = AppSocket.StartClientSocket(serverSocket);
-            
+
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine = null, pet = null;
@@ -73,6 +77,11 @@ public class AppServer {
         }
     }
 
+    /**
+     * Este metodo seencarga de inicializar todos los metodos de la clase prueba
+     * 
+     * @throws FileNotFoundException
+     */
     public static void initialize() throws FileNotFoundException {
         try {
             Class cls = Class.forName("edu.escuelaing.arem.project.app.prueba");
@@ -90,6 +99,16 @@ public class AppServer {
         }
     }
 
+    /**
+     * Este metodo se encarga de resolver las peticiones que solicitan una recurso
+     * .png
+     * 
+     * @param out       Elemento de salida de datos como respuesta a las peticiones
+     * @param outStream Elemento de salida de datos como respuesta a las peticiones
+     *                  de imagenes
+     * @param petition  Peticiones realizada al servidor
+     * @throws IOException
+     */
     private static void ImagesServer(PrintWriter out, OutputStream outStream, String petition) throws IOException {
         try {
             BufferedImage image = ImageIO.read(new File(System.getProperty("user.dir") + "/resources" + petition));
@@ -103,6 +122,14 @@ public class AppServer {
 
     }
 
+    /**
+     * Este metodo se encarga de resolver las peticiones que solicitan una recurso
+     * .html
+     * 
+     * @param out      Elemento de salida de datos como respuesta a las peticiones
+     * @param petition Peticiones realizada al servidor
+     * @throws IOException
+     */
     private static void HtmlServer(PrintWriter out, String petition) throws IOException {
         StringBuffer sb = new StringBuffer();
         try (BufferedReader reader = new BufferedReader(
@@ -121,6 +148,14 @@ public class AppServer {
 
     }
 
+    /**
+     * Este metodo se encarga de resolver las peticiones del favicon.ico
+     * 
+     * @param out       Elemento de salida de datos como respuesta a las peticiones
+     * @param outStream Elemento de salida de datos como respuesta a las peticiones
+     * @param petition  Peticiones realizada al servidor
+     * @throws IOException
+     */
     private static void FaviconServer(PrintWriter out, OutputStream outStream, String petition) throws IOException {
         out.println("HTTP/1.1 200 OK\r");
         out.println("Content-Type: image/vnd.microsoft.icon\r");
@@ -130,6 +165,15 @@ public class AppServer {
         ICOEncoder.write(images.get(0), outStream);
     }
 
+    /**
+     * Este metodo se encarga de tomar los parametros de la peticion y almacenarlos
+     * en un arreglo
+     * 
+     * @param petition Peticiones realizada al servidor
+     * @return Un arreglo de objetos que representa los parametros obtenidos en la
+     *         peticion, si retorna null es que no habia parametros
+     * @throws IndexOutOfBoundsException
+     */
     private static Object[] extractParams(String pet) throws IndexOutOfBoundsException {
         Object[] params = null;
         if (pet.matches("[/app/]+[a-z]+[?]+[a-z,=,&,0-9]+")) {
@@ -142,6 +186,13 @@ public class AppServer {
         return params;
     }
 
+    /**
+     * l Este metodo se encarga de resolver las peticiones a recursos dinamicos
+     * 
+     * @param out      Elemento de salida de datos como respuesta a las peticiones
+     * @param petition Peticiones realizada al servidor
+     * @throws IOException
+     */
     private static void DinamicResourcesServer(PrintWriter out, String petition) throws IOException {
         try {
             Object[] params = extractParams(petition);
